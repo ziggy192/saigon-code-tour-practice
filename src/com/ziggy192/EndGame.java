@@ -1,7 +1,11 @@
 package com.ziggy192;
 
-import java.util.Scanner;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
+
+// sort truoc roi chay thi co sao dau, ko chiu ve ra giay xem thu, luc do dau oc chan qua
 public class EndGame {
 	public static void main(String[] args) {
 
@@ -20,6 +24,11 @@ public class EndGame {
 		}
 		scanner.nextLine();
 
+		List<Wrapper> wrappers = IntStream.range(0, a.length)
+				.mapToObj(i -> new Wrapper(a[i], i + 1))
+				.sorted(Comparator.reverseOrder())
+				.collect(Collectors.toList());
+
 		for (int i = 0; i < q; i++) {
 
 			int l = scanner.nextInt();
@@ -27,7 +36,8 @@ public class EndGame {
 			int k = scanner.nextInt();
 
 
-			calculate(a.clone(), l - 1, r - 1, k);
+			int result = calculate(wrappers, l, r , k);
+			System.out.println(result);
 
 			if (i < q - 1) {
 
@@ -37,27 +47,35 @@ public class EndGame {
 
 	}
 
-	private static void calculate(int[] a, int l, int r, int k) {
+	private static class Wrapper implements Comparable<Wrapper>{
+		int value ;
+		int index;
 
-		for (int j = 0; j < k; j++) {
-			int max = a[l + j];
-			int m = l + j;
-			for (int i = l + j; i <= r; i++) {
-				if (a[i] > max) {
-					max = a[i];
-					m = i;
-				}
-			}
-
-			int temp = a[l + j];
-			a[l + j] = a[m];
-			a[m] = temp;
-
-
+		public Wrapper(int value, int index) {
+			this.value = value;
+			this.index = index;
 		}
 
-		System.out.println(a[l + k - 1]);
 
+
+		@Override
+		public int compareTo(Wrapper o) {
+			return this.value - o.value;
+		}
+
+	}
+	private static int calculate(List<Wrapper> a, int l, int r, int k) {
+		int countK = 0;
+		for (Wrapper wrapper : a) {
+			if (wrapper.index >= l && wrapper.index <= r) {
+				countK++;
+			}
+			if (countK == k) {
+				return wrapper.value;
+			}
+		}
+
+		return -1;
 	}
 
 
